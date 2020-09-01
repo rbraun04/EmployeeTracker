@@ -51,4 +51,41 @@ const firstQuestions = function() {
     };
     firstQuestions();
 
-    
+    // build functions to add an employee, add a new role/title, update role, add new department, view all departments, view all roles, view all employees. 
+
+
+// function to add employee
+
+function addEmployee () {
+    inquirer
+    .prompt ([
+        { 
+            type: "input",
+            message: "Please enter your employees first name",
+            name: "firstname",
+        },
+        {
+            type: "input",
+            message: "Please enter your employees last name",
+            name: "lastname",
+
+        }
+    ]).then(function(response) {
+        connection.query("INSER INTO employee SET ?",
+        {
+            first_name: response.firstname,
+            last_name: response.lastname,
+            role_id: null,
+            manager_id: null,
+        },
+        function (err, response) {
+            if (err) {
+                throw err;
+            }
+            console.table(response);
+        }
+        );
+        firstQuestions();
+    });
+}
+
