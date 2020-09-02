@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+const connection = require("./database.js");
 
 
 
@@ -71,7 +72,7 @@ function addEmployee () {
 
         }
     ]).then(function(response) {
-        connection.query("INSER INTO employee SET ?",
+        connection.query("INSERT INTO employee SET ?",
         {
             first_name: response.firstname,
             last_name: response.lastname,
@@ -82,10 +83,40 @@ function addEmployee () {
             if (err) {
                 throw err;
             }
-            console.table(response);
+            console.log();
         }
         );
         firstQuestions();
     });
 }
 
+// function to view all employees
+
+function viewAllEmployees() {
+    var allEmployees = "SELECT * FROM employee";
+    connection.query(allEmployees, function(err, response){
+        console.log("\n Employees \n");
+        console.table(response);
+    })
+
+}
+
+// function to view all departments
+
+function viewAllDepartments() {
+    var allDepartments = "SELECT * FROM department";
+    connection.query(allDepartments, function(err, response){
+        console.log("\n Departments \n");
+        console.table(response)
+    })
+}
+
+// function to view all roles
+
+function viewAllRoles() {
+    var allRoles = "SELECT * FROM role";
+    connection.query(allRoles, function(err, response){
+        console.log("\n Roles \n");
+        console.table(response)
+    })
+}
