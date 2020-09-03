@@ -98,22 +98,22 @@ function addRole() {
     .prompt ([
         {
             type: "input",
-            message: "Please enter a role",
+            message: "Please enter employee title",
             name: "roletitle"
         },
         {
             type: "input",
-            message: "Pleaes enter that roles salary",
+            message: "Pleaes enter that employee salary",
             name: "rolesalary"
         },
         {
             type: "input",
-            message: "Please enter this roles department id",
+            message: "Please enter employee department id",
             name: "roleDepId"
 
         }
     ]).then(function(response) {
-        connection.query("INSERT INTO roles SET ?",
+        connection.query("INSERT INTO role SET ?",
         {
             title: response.roletitle,
             salary: response.rolesalary,
@@ -123,7 +123,7 @@ function addRole() {
             if(err) {
                 throw err;
             }
-            console.log("Role added!");
+            console.log(response);
         }
         );
         firstQuestions();
@@ -174,15 +174,22 @@ function updatedEmployeeRole() {
             choices: employeesarray
         },
         {
-            type: "input",
+            type: "list",
             name: "newrole",
             message: "What is the new role for this employee?",
+            choices: ["manager", "creative"],
         }
     ]).then(function(response){
         console.log("about to update", response);
         const idUpdate = {};
         idUpdate.employeeId = parseInt(response.updateEmployeeRole.split(" ")[0]);
-        connection.query("UPDATE employee SET role_id = ? WHERE id = ?"[idUpdate.role_id, idUpdate.employeeId],
+        if (response.newrole === 'manager') {
+            idUpdate.role_id = 1;
+        } else if (response.newrole === "creative") {
+            idUpdate.role_id = 2;
+        }
+        connection.query("UPDATE employee SET role_id = ? WHERE id = ?",
+        [idUpdate.role_id, idUpdate.employeeId],
         function (err, data) {
             firstQuestions();
         }
@@ -194,7 +201,7 @@ function updatedEmployeeRole() {
 // function to view all employees
 
 function viewAllEmployees() {
-    var allEmployees = "SELECT * FROM employee";
+    var allEmployees = "SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department on role.department_id = department.id;";
     connection.query(allEmployees, function(err, response){
         console.log("\n Employees \n");
         console.table(response);
@@ -217,7 +224,7 @@ function viewAllDepartments() {
 // function to view all roles
 
 function viewAllRoles() {
-    var allRoles = "SELECT * FROM roles";
+    var allRoles = "SELECT * FROM role";
     connection.query(allRoles, function(err, response){
         console.log("\n Roles \n");
         console.table(response)
